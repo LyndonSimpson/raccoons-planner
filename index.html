@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Raccoon</title>
+  <meta name="description" content="A simple daily raccoon meme calendar.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f4efe6;
+      --bg-accent: #dfd1ba;
+      --card: rgba(255, 251, 245, 0.84);
+      --card-border: rgba(81, 59, 38, 0.14);
+      --text: #2d2318;
+      --muted: #6c5946;
+      --shadow: 0 24px 60px rgba(68, 45, 23, 0.16);
+      --highlight: #c36b2c;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Manrope", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.7), transparent 35%),
+        radial-gradient(circle at bottom right, rgba(195, 107, 44, 0.16), transparent 30%),
+        linear-gradient(160deg, var(--bg) 0%, #efe4d3 52%, var(--bg-accent) 100%);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .shell {
+      width: min(100%, 860px);
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      overflow: hidden;
+    }
+
+    .hero {
+      padding: 32px 32px 12px;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--highlight);
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Fraunces", serif;
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      line-height: 0.96;
+    }
+
+    .subtitle {
+      max-width: 38rem;
+      margin: 16px 0 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .panel {
+      padding: 20px 20px 28px;
+    }
+
+    .status-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px 16px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(81, 59, 38, 0.1);
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .viewer {
+      position: relative;
+      min-height: 420px;
+      border-radius: 24px;
+      overflow: hidden;
+      background:
+        linear-gradient(145deg, rgba(255, 252, 247, 0.98), rgba(237, 227, 212, 0.92));
+      border: 1px solid rgba(81, 59, 38, 0.12);
+    }
+
+    .viewer::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(135deg, rgba(195, 107, 44, 0.08), transparent 45%),
+        radial-gradient(circle at 20% 20%, rgba(45, 35, 24, 0.08), transparent 22%);
+      pointer-events: none;
+    }
+
+    .state {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 32px;
+      text-align: center;
+      transition: opacity 180ms ease;
+    }
+
+    .state[hidden] {
+      display: none;
+    }
+
+    .message-card {
+      max-width: 28rem;
+    }
+
+    .message-card h2 {
+      margin: 0 0 10px;
+      font-family: "Fraunces", serif;
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+    }
+
+    .message-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    #memeImage {
+      position: relative;
+      z-index: 1;
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 420px;
+      object-fit: contain;
+      background:
+        linear-gradient(145deg, rgba(255, 251, 245, 0.4), rgba(219, 205, 185, 0.2));
+    }
+
+    .footer {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 12px 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .footer code {
+      font-family: inherit;
+      font-weight: 700;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.75);
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 14px;
+      }
+
+      .hero {
+        padding: 24px 22px 4px;
+      }
+
+      .panel {
+        padding: 16px 16px 22px;
+      }
+
+      .viewer,
+      #memeImage {
+        min-height: 280px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <p class="eyebrow">Raccoon Dispatch</p>
+      <h1>One meme. One day. One very serious raccoon schedule.</h1>
+      <p class="subtitle">
+        The page checks today’s date, looks it up in <code>manifest.json</code>, and shows the scheduled image from the
+        <code>raccoons/</code> folder.
+      </p>
+    </section>
+
+    <section class="panel">
+      <div class="status-row">
+        <div class="pill">Today: <span id="todayLabel">Loading...</span></div>
+        <div class="pill">Source: <span id="fileLabel">Waiting for manifest</span></div>
+      </div>
+
+      <div class="viewer">
+        <div id="loadingState" class="state">
+          <div class="message-card">
+            <h2>Checking today’s raccoon</h2>
+            <p>Reading the manifest and matching it against today’s date.</p>
+          </div>
+        </div>
+
+        <div id="emptyState" class="state" hidden>
+          <div class="message-card">
+            <h2>No raccoon scheduled today</h2>
+            <p>Add an entry for today in <code>manifest.json</code> and put the image into <code>raccoons/</code>.</p>
+          </div>
+        </div>
+
+        <div id="errorState" class="state" hidden>
+          <div class="message-card">
+            <h2>Manifest problem</h2>
+            <p id="errorMessage">The page could not load <code>manifest.json</code>.</p>
+          </div>
+        </div>
+
+        <img id="memeImage" alt="Today's raccoon meme" hidden>
+      </div>
+
+      <div class="footer">
+        <span>Expected naming format: <code>YYYY-MM-DD.jpg</code> or <code>.png</code></span>
+        <span id="yearLabel"></span>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const today = new Date();
+    const todayKey = today.toLocaleDateString("en-CA", {
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+    });
+
+    const readableDate = today.toLocaleDateString(undefined, {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    });
+
+    const todayLabel = document.getElementById("todayLabel");
+    const fileLabel = document.getElementById("fileLabel");
+    const yearLabel = document.getElementById("yearLabel");
+    const loadingState = document.getElementById("loadingState");
+    const emptyState = document.getElementById("emptyState");
+    const errorState = document.getElementById("errorState");
+    const errorMessage = document.getElementById("errorMessage");
+    const memeImage = document.getElementById("memeImage");
+
+    todayLabel.textContent = readableDate;
+    yearLabel.textContent = "Calendar key: " + todayKey;
+
+    function showState(name) {
+      loadingState.hidden = name !== "loading";
+      emptyState.hidden = name !== "empty";
+      errorState.hidden = name !== "error";
+      memeImage.hidden = name !== "image";
+    }
+
+    async function loadTodayMeme() {
+      try {
+        const response = await fetch("./manifest.json", { cache: "no-store" });
+
+        if (!response.ok) {
+          throw new Error("HTTP " + response.status + " while loading manifest.json");
+        }
+
+        const manifest = await response.json();
+        const fileName = manifest[todayKey];
+
+        if (!fileName) {
+          fileLabel.textContent = "No file mapped";
+          showState("empty");
+          return;
+        }
+
+        fileLabel.textContent = fileName;
+        memeImage.src = "./raccoons/" + encodeURIComponent(fileName);
+        memeImage.onload = () => showState("image");
+        memeImage.onerror = () => {
+          errorMessage.textContent = "The manifest points to " + fileName + ", but the image file could not be loaded.";
+          showState("error");
+        };
+      } catch (error) {
+        errorMessage.textContent = error.message || "The page could not load manifest.json.";
+        showState("error");
+      }
+    }
+
+    loadTodayMeme();
+  </script>
+</body>
+</html>
